@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2021-11-19" />
+
+<title>White Wine Quality Data</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Droid Sans", "Open Sans", Helvetica, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 12px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: disc;
+}
+ul ul {
+margin-bottom: 0;
+}
+figure {
+margin: 0;
+text-align: center;
+} div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+
+margin: 0 5px;
+}
+h1 {
+padding-top: 10px;
+border-bottom: 4px solid #f7f7f7;
+margin-top: 0;
+font-size: 150%;
+line-height: 30px;
+}
+h1.title {
+color: rgb(66,66,66);
+font-size: 220%;
+line-height: 40px;
+}
+h2 {
+border-bottom: 3px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+margin-left: 4px;
+font-size: 120%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+margin-left: 8px;
+font-size: 110%;
+}
+h3.subtitle {
+font-style: normal;
+color: rgb(46,90,136);
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 12px;
+font-size: 100%;
+}
+h4.author { border-bottom: 0;
+color: rgb(46,90,136);
+}
+h4.date { border-bottom: 1px solid #f7f7f7;
+font-size: 100%;
+color: rgb(46,90,136);
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+address{
+font-weight: bold;
+color: rgb(77,77,77);
+margin-left: 8px;
+font-size: 100%;
+}
+a {
+color: rgb(24,116,205);
+text-decoration: none;
+}
+a:hover {
+color: rgb(28,134,238); }
+a:visited {
+color: rgb(24,116,205); }
+a:visited:hover {
+color: rgb(28,134,238); }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+code {
+font-family: "Liberation Mono", "Open Sans Mono", "DejaVu Sans Mono", "Droid Sans Mono", Consolas, monospace;
+color: rgb(77,77,77);
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0;
+}
+pre, code {
+background-color: #F8F8F8;
+border-radius: 3px;
+color: #333;
+}
+pre {
+white-space: pre-wrap; 
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #F8F8F8;
+}
+strong { font-weight: bold;
+color: rgb(24,116,205);
+}
+em { font-style: italic;
+color: rgb(46,90,136);
+}
+hi { font-weight: bold;
+color: rgb(28,134,238);
+}
+
+code span.co { color: rgb(112,112,112); font-style: normal; } 
+code span.do { color: rgb(50,50,50); font-style: normal; } 
+code span.an { font-style: italic; } 
+code span.cf { font-weight: bold; } 
+code span.cv { font-style: italic; } 
+code span.dt { color: #4075AD; } 
+code span.at { color: #4075AD; } 
+code span.dv { color: rgb(85,85,85); } 
+code span.er { color: rgb(166,23,23); font-weight: bold; } 
+code span.in { font-style: italic; } 
+code span.kw { color: rgb(23,74,133); font-weight: bold; } 
+code span.fu { color: rgb(23,74,133); font-weight: bold; } 
+code span.al { color: rgb(255,255,255); font-weight: bold; } 
+code span.pp { font-weight: bold; } 
+code span.cn { color: rgb(0,0,0); font-weight: normal; } 
+code span.st { color: rgb(85,85,85); font-style: italic; } 
+code span.ot { color: rgb(0,0,0); font-style: normal; } 
+code span.wa { font-style: italic; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">White Wine Quality Data</h1>
+<h3 class="subtitle">Final Project <br> <i>A Kaggle-style Data Analysis</i> <br> Course “Data Mining &amp; Machine Learning” <br> MIDAS – Master in AI &amp; Data Science</h3>
+<h4 class="date">19 Nov 2021</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#dataset">Dataset</a></li>
+<li><a href="#evaluation">Evaluation</a></li>
+</ul>
+</div>
+
+<p><br></p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The goal of this project is to use the statistical learning methods introduced in the course to analyse a dataset on the quality of white vinho verde wine samples from the north of Portugal (<a href="https://en.wikipedia.org/wiki/Vinho_Verde" class="uri">https://en.wikipedia.org/wiki/Vinho_Verde</a>).</p>
+<p><img src="data:image/jpeg;base64,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" /></p>
+</div>
+<div id="dataset" class="section level2">
+<h2>Dataset</h2>
+<p>Predictor variables/features (except ID) describing physicochemical characteristics for the wine samples:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable name
+</th>
+<th style="text-align:left;">
+Description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:left;">
+IDentifier
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+fixed.acidity
+</td>
+<td style="text-align:left;">
+Fixed acidity (g(tartaric acid)/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+volatile.acidity
+</td>
+<td style="text-align:left;">
+Volatile acidity (g(acetic acid)/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+citric.acid
+</td>
+<td style="text-align:left;">
+Citric acid (g/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+residual.sugar
+</td>
+<td style="text-align:left;">
+Residual sugar (g/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+chlorides
+</td>
+<td style="text-align:left;">
+Chlorides (g(sodium chloride)/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+free.sulfur.dioxide
+</td>
+<td style="text-align:left;">
+Free sulfur dioxide (mg/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+total.sulfur.dioxide
+</td>
+<td style="text-align:left;">
+Total sulfur dioxide (mg/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+density
+</td>
+<td style="text-align:left;">
+Density (g/cm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pH
+</td>
+<td style="text-align:left;">
+pH
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sulphates
+</td>
+<td style="text-align:left;">
+Sulphates (g(potassium sulphate)/dm<span class="math inline">\(^3\)</span>)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+alcohol
+</td>
+<td style="text-align:left;">
+Alcohol (vol.%)
+</td>
+</tr>
+</tbody>
+</table>
+Response variable or target (based on sensory data):
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+Variable name
+</th>
+<th style="text-align:left;">
+Description
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+quality
+</td>
+<td style="text-align:left;">
+Categorical variable for high quality (based on score &gt; 6) or average/low quality (based on score <span class="math inline">\(\ge\)</span> 6)
+</td>
+</tr>
+</tbody>
+</table>
+<p>The data files provided are the following:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">File name</th>
+<th></th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><code>wine_quality_train.csv</code></td>
+<td></td>
+<td align="left">training set</td>
+</tr>
+<tr class="even">
+<td align="left"><code>wine_quality_test.csv</code></td>
+<td></td>
+<td align="left">test set (without quality class)</td>
+</tr>
+</tbody>
+</table>
+<p>Training set to be used for models fitting:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>training <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">&quot;wine_quality_train.csv&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>smef<span class="sc">::</span><span class="fu">describe</span>(training[,<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                       Obs    Mean StdDev    Min  Median     Max</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="do">## fixed.acidity        3266   6.848  0.856  3.800   6.800  14.200</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="do">## volatile.acidity     3266   0.278  0.101  0.080   0.260   1.100</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="do">## citric.acid          3266   0.335  0.122  0.000   0.320   1.660</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="do">## residual.sugar       3266   6.343  5.003  0.600   5.100  31.600</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="do">## chlorides            3266   0.046  0.021  0.009   0.043   0.301</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="do">## free.sulfur.dioxide  3266  35.306 16.716  2.000  34.000 146.500</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="do">## total.sulfur.dioxide 3266 138.387 42.470 10.000 134.000 366.500</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="do">## density              3266   0.994  0.003  0.987   0.994   1.010</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="do">## pH                   3266   3.190  0.152  2.720   3.180   3.800</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="do">## sulphates            3266   0.491  0.113  0.230   0.470   1.060</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="do">## alcohol              3266  10.530  1.230  8.000  10.400  14.000</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="do">##         AvgOrLow High</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="do">## quality     2555  711</span></span></code></pre></div>
+<p>Test set for final predictions:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="st">&quot;wine_quality_test.csv&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>smef<span class="sc">::</span><span class="fu">describe</span>(test[,<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="do">##                       Obs     Mean  StdDev    Min   Median     Max</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">## fixed.acidity        1632   6.8682  0.8195 3.9000   6.8000  10.700</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">## volatile.acidity     1632   0.2789  0.1011 0.0800   0.2600   0.965</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="do">## citric.acid          1632   0.3322  0.1191 0.0000   0.3200   1.230</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="do">## residual.sugar       1632   6.4873  5.2086 0.6000   5.2500  65.800</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="do">## chlorides            1632   0.0461  0.0227 0.0120   0.0430   0.346</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="do">## free.sulfur.dioxide  1632  35.3125 17.5809 3.0000  33.0000 289.000</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="do">## total.sulfur.dioxide 1632 138.3082 42.5672 9.0000 134.0000 440.000</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="do">## density              1632   0.9941  0.0031 0.9872   0.9938   1.039</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="do">## pH                   1632   3.1851  0.1488 2.7900   3.1800   3.820</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="do">## sulphates            1632   0.4882  0.1156 0.2200   0.4700   1.080</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="do">## alcohol              1632  10.4822  1.2322 8.4000  10.3000  14.200</span></span></code></pre></div>
+</div>
+<div id="evaluation" class="section level2">
+<h2>Evaluation</h2>
+<ul>
+<li><p>The goal is to classify the wines according to their quality. In particular, the classification of high quality wines is considered of primary importance.</p></li>
+<li><p>The final classification model will be evaluated on the test set using the F1 score.</p></li>
+<li><p>Each student may provide up to 3 submissions.</p></li>
+<li><p>The submitted file(s) should be formatted as follows:</p>
+<pre><code>ID,Pred,Prob
+3,AvgOrLow,0.15
+6,High,0.80
+13,AvgOrLow,0.38
+...</code></pre>
+<p>where <code>ID</code> is the ID for each wine in the test set, <code>Pred</code> the predicted quality class, and <code>Prob</code> the probability of high quality wine.</p></li>
+<li><p>Each submitted file should be named using the scheme <code>&lt;Surname&gt;_&lt;Name&gt;_submission&lt;num&gt;.csv</code>, where <code>&lt;Surname&gt;</code> and <code>&lt;Name&gt;</code> are the student’s surname and name, and <code>&lt;num&gt;</code> is the submission number.</p></li>
+<li><p>The submission file(s) must be uploaded in <strong>moodle</strong>.</p></li>
+<li><p>Submission deadline: November 26th, 24:00.</p></li>
+<li><p>In-class discussion &amp; presentation: November 30th, 09:00 (each student should consider at most 25-30 min. for the presentation).</p></li>
+</ul>
+<p><br></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
